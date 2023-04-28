@@ -2,8 +2,8 @@ knnTest <- function(datasetTrain, class, query, k=1) {
     # Cria um array para as distâncias euclidianas entre cada um dos pontos do dataset de treino e a query a ser classificada
     E = c()
 
-    # Para cada coluna do dataset de treino, calcula a distância euclidiana entre o valor da query e o valor do dataset de treino
-    for (row in 1:ncol(datasetTrain)) {
+    # Para cada linha do dataset de treino, calcula a distância euclidiana entre o valor da query e o valor do dataset de treino
+    for (row in 1:nrow(datasetTrain)) {
         soma = 0
         i = 1
 
