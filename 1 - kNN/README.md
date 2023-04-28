@@ -1,4 +1,4 @@
-#KNN
+# KNN
 
 ## Para executar, abra o R no terminal na pasta "1 - kNN" e use:
 
