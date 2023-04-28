@@ -9,7 +9,7 @@ knnTest <- function(datasetTrain, class, query, k=1) {
 
         for (col in 1:ncol(datasetTrain)) {
             if (col != class && is.numeric(datasetTrain[row, col]) == TRUE) { # Apenas para colunas numéricas e que não sejam a coluna da classe
-                soma = sum(soma, ((query[i] - datasetTrain[row, col])^2))
+                soma = sum(soma, ((as.numeric(query[i]) - as.numeric(datasetTrain[row, col]))^2))
                 i = i + 1
             }
         }
@@ -24,7 +24,7 @@ knnTest <- function(datasetTrain, class, query, k=1) {
 
     # Identifica as repetições das classes únicas
     for (i in 1:length(U)) {
-       R[i] = sum(U[i] == classes)
+       #R[i] = sum(U[i] == classes)
     }
 
     ret = list()
@@ -49,8 +49,8 @@ normalize <- function(dataset) {
     # Normaliza os valores das colunas pela técnica de reescala linear
     for(col in 1:ncol(dataset)) {
         # identifica o mínimo e o máximo da coluna
-        minimo <- min(dataset[, col])
-        maximo <- max(dataset[, col])
+        minimo <- min(as.numeric(dataset[, col]))
+        maximo <- max(as.numeric(dataset[, col]))
         for (row in 1:nrow(dataset)) {
             if (is.numeric(dataset[row, col]) == TRUE)
             # para cada valor numérico, aplica a fórmula de normalização
@@ -129,7 +129,7 @@ execute <- function(dataset, class, k=1) {
         cat(paste("Classe mais frequente: ", valorMaisFrequente, "\n\n"))
 
         # Se a resposta vor correta, adiciona 1 ao contador de acertos
-        if (answer == valorMaisFrequente) somaCorretos = sum(somaCorretos, 1)
+        if (answer == valorMaisFrequente) somaCorretos = sum(as.numeric(somaCorretos), as.numeric(1))
     }
 
     # Imprime a quantidade de acertos x quantidade total de testes e calcula a acurácia
@@ -143,7 +143,7 @@ executeAllTests <- function(dataset, k, columnsForTests) {
     for (i in columnsForTests) {
         acuracia = execute(dataset, i, k)
 
-        somaAcuracias = sum(somaAcuracias, acuracia)
+        somaAcuracias = sum(as.numeric(somaAcuracias), as.numeric(acuracia))
     }
 
     print(paste("Acurácia média: ", somaAcuracias/length(columnsForTests), "%"))
