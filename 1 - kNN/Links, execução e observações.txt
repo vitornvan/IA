@@ -1,0 +1,26 @@
+Nomes: 
+
+Vinicius Henrique Crispim Rosa - 9395067
+Vitor Nunes Vanjura - 12543183
+
+Link para o vídeo: https://youtu.be/Jm1qSyT6z7c
+
+Link para o repositório do GitHub: https://github.com/vitornvan/IA/tree/main/1%20-%20kNN
+
+Obs: Em algumas versões do R e em alguns SO específicos, o print dos resultados obtidos aparece como valores numéricos, mesmo sendo categóricos. Apesar da diferença, não há nenhum problema em relação a execução do algoritmo e seus resultados.
+
+Os testes feitos durante o desenvolvimento foram feitos através do RStudio, com o R na versão 4.3.0, no sistema operacional Windows 11.
+
+Instruções de execução:
+
+Para executar, abra o R no terminal na pasta que contem o arquivo source e o dataset e use:
+
+	source("source.r")
+	dataset <- read.csv("crx.data", header = FALSE)
+	execute(dataset, colunaQueSeQuerPrever, kVizinhosProximosDesejados)
+
+Para executar para todas as colunas categóricas, no mesmo local, use:
+
+	source("source.r")
+	dataset <- read.csv("crx.data", header = FALSE)
+	executeAllTests(dataset, kVizinhosProximosDesejados, c(1, 4, 5, 6, 7, 9, 10, 12, 13, 16))
