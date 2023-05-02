@@ -81,7 +81,7 @@ perceptron.train <- function(dataset, funcao, eta=0.1, limiarDaFuncao = 0.5, thr
 
         # Imprime os resultados da época
         cat("Epoca: ", epoca, "\n")
-        cat("Pesos: ", weights, "\n")
+        cat("Pesos finais da epoca: ", weights, "\n")
         cat("Erro quadrático médio: ", sumError, "\n\n")
     }
 
