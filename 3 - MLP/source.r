@@ -14,6 +14,40 @@ dfTanH <- function(fNet) {
     return((1-fNet)^2) # Verificar essa derivada
 }
 
+normalize <- function(dataset) {
+    # Normaliza os valores das colunas pela técnica de reescala linear
+    for(col in 1:ncol(dataset)) {
+        # identifica o mínimo e o máximo da coluna
+        minimo <- min(as.numeric(dataset[, col]))
+        maximo <- max(as.numeric(dataset[, col]))
+        for (row in 1:nrow(dataset)) {
+            if (is.numeric(dataset[row, col]) == TRUE)
+            # para cada valor numérico, aplica a fórmula de normalização
+            dataset[row, col] <- (dataset[row, col] - minimo) / (maximo - minimo)
+        }
+    }
+    return(dataset)
+}
+
+oneHotEncoding <- function(dataset, classColumn) {
+    # Divide as colunas categóricas em colunas numéricas usando one hot encoding
+    # Não divide a coluna da classe a ser classificada
+    numColunasInicial = ncol(dataset)
+
+    for(col in 1:numColunasInicial) {
+        if (is.character(dataset[, col]) && col != classColumn) {
+            categories = unique(dataset[, col])
+
+            for(category in categories) {
+                name = paste(col, category, sep = "_")
+                dataset[,name] = ifelse(dataset[, col] == category, 1, 0)
+            }
+        }
+    }
+
+    return(dataset)
+}
+
 mlp.architecture <- function(
     input.lenght=2,
     hidden.lenght=2,
