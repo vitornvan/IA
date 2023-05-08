@@ -1,0 +1,26 @@
+Nomes: 
+
+Vinicius Henrique Crispim Rosa - 9395067
+Vitor Nunes Vanjura - 12543183
+
+Link para o vídeo: https://youtu.be/ocC9zVulyv8
+
+Link para o repositório do GitHub: https://github.com/vitornvan/IA/tree/main/2%20-%20Perceptron
+
+Os testes feitos durante o desenvolvimento foram feitos através do RStudio, com o R na versão 4.3.0, no sistema operacional Windows 11.
+
+Instruções de execução:
+
+Para executar, abra o R no terminal na pasta "2 - Percetron" e use:
+
+Para o OR:
+ source("source.r")
+ datasetOr = read.csv("datasetOr.csv", header = FALSE)
+ execute(datasetOr, fStepBinComLimiar)
+
+Para o ClaraEscura:
+ source("source.r")
+ datasetClaraEscura = read.csv("datasetClaraEscura.csv", header = FALSE)
+ execute(datasetClaraEscura, fStepBipComLimiar)
+
+Obs: Para o datasetOr, a função de ativação é a fStepBinComLimiar, pois as respostas que ele precisa são ou 0 ou 1. Já para o datasetClaraEscura, a função é fStepBipComLimiar, pois as respostas que se quer são -1 ou 1.
