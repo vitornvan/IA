@@ -14,6 +14,40 @@ dfTanH <- function(fNet) {
     return((1-fNet)^2) # Verificar essa derivada
 }
 
+normalize <- function(dataset) {
+    # Normaliza os valores das colunas pela técnica de reescala linear
+    for(col in 1:ncol(dataset)) {
+        # identifica o mínimo e o máximo da coluna
+        minimo <- min(as.numeric(dataset[, col]))
+        maximo <- max(as.numeric(dataset[, col]))
+        for (row in 1:nrow(dataset)) {
+            if (!is.character(dataset[row, col]) == TRUE)
+            # para cada valor numérico, aplica a fórmula de normalização
+            dataset[row, col] <- (as.numeric(dataset[row, col]) - minimo) / (maximo - minimo)
+        }
+    }
+    return(dataset)
+}
+
+oneHotEncoding <- function(dataset, classColumn) {
+    # Divide as colunas categóricas em colunas numéricas usando one hot encoding
+    # Não divide a coluna da classe a ser classificada
+    numColunasInicial = ncol(dataset)
+
+    for(col in 1:numColunasInicial) {
+        if (!is.numeric(dataset[, col]) && col != classColumn) {
+            categories = unique(dataset[, col])
+
+            for(category in categories) {
+                name = paste(col, category, sep = "_")
+                dataset[,name] = ifelse(dataset[, col] == category, 1, 0)
+            }
+        }
+    }
+
+    return(dataset)
+}
+
 mlp.architecture <- function(
     input.lenght=2,
     hidden.lenght=2,
@@ -66,7 +100,7 @@ mlp.forward <- function(model, Xp) {
 mlp.backpropagation <- function(model, datasetTrain, eta=0.1, treshold=1e-3) {
     
     squaredError = 2 * treshold
-    counter = 0
+    counter = 1
 
     while(squaredError > treshold) {
         squaredError = 0
@@ -88,8 +122,12 @@ mlp.backpropagation <- function(model, datasetTrain, eta=0.1, treshold=1e-3) {
             wOkj = model$output[, 1:model$hidden.lenght]
 
             deltaHP = as.numeric(model$dfDNet(results$fNetHP)) * (as.numeric(deltaOP) %*% wOkj)
+            #print(Yp)
+            #print(Op)
+            #print(as.vector(c(results$fNetHP, 1)))
 
             model$output = model$output + eta * (deltaOP %*% as.vector(c(results$fNetHP, 1)))
+
             model$hidden = model$hidden + eta * (t(deltaHP) %*% as.vector(c(Xp, 1)))
 
         }
@@ -105,4 +143,110 @@ mlp.backpropagation <- function(model, datasetTrain, eta=0.1, treshold=1e-3) {
     ret$counter = counter
 
     return(ret)
+}
+
+execute <- function(dataset, eta=0.1, treshold=1e-3) {
+    dataset <- dataset[-c(1001:10000),]
+
+    dataset = oneHotEncoding(dataset, 1)
+    dataset = normalize(dataset)
+
+    dataset = dataset[, -c(13, 14, 15)]
+    print(dataset[1, 1:ncol(dataset)])
+
+
+    model = mlp.architecture(12, 25, 1)
+
+     # Divide os dataset em dados de treino e dados de teste
+    n <- nrow(dataset)
+    indicesDeTreino <- sample(1:n, round(0.7 * n), replace = FALSE)
+    train_data <- dataset[indicesDeTreino, ]
+    test_data <- dataset[-indicesDeTreino, ]
+
+
+    trained = mlp.backpropagation(model, train_data, eta, treshold)
+
+    trainedModel = trained$model
+    epocaFinal = trained$counter
+
+    acertos = 0;
+
+    # Testando o modelo
+    for (p in 1:nrow(test_data)) {
+        Xp = as.numeric(test_data[p, 1:trainedModel$input.lenght])
+        Yp = as.numeric(test_data[p, (as.numeric(trainedModel$input.lenght)+1):ncol(test_data)])
+
+        results = mlp.forward(trainedModel, Xp)
+        Op = results$fNetOP
+
+        if (Op > 0.5) {
+            Op = 1
+        } else {
+            Op = 0
+        }
+
+        cat("Teste: ", p, "\n")
+        cat("Valor esperado: ", Yp, " - Valor Obtido: ", Op, "\n\n")
+
+        if (Op == Yp) acertos = sum(acertos, 1)
+    }
+
+    print(paste("Resultados da época final: ", epocaFinal))
+    print(paste("Acertos: ", acertos, " de ", nrow(test_data), " (acurácia de", acertos/nrow(test_data)*100, "%)"))
+}
+
+executeTanH <- function(dataset, eta=0.1, treshold=1e-3) {
+    dataset <- dataset[-c(1001:10000),]
+
+    dataset = oneHotEncoding(dataset, 1)
+    dataset = normalize(dataset)
+
+    dataset = dataset[, -c(13, 14, 15)]
+    dataset[, ncol(dataset)] <- replace(dataset[, ncol(dataset)], dataset[, ncol(dataset)] == "0", -1)
+
+  
+
+    print(dataset[1, 1:ncol(dataset)])
+    print(dataset[2, 1:ncol(dataset)])
+    print(dataset[3, 1:ncol(dataset)])
+
+
+    model = mlp.architecture(12, 25, 1, fTanH, dfTanH)
+
+     # Divide os dataset em dados de treino e dados de teste
+    n <- nrow(dataset)
+    indicesDeTreino <- sample(1:n, round(0.7 * n), replace = FALSE)
+    train_data <- dataset[indicesDeTreino, ]
+    test_data <- dataset[-indicesDeTreino, ]
+
+
+    trained = mlp.backpropagation(model, train_data, eta, treshold)
+
+    trainedModel = trained$model
+    epocaFinal = trained$counter
+
+    acertos = 0;
+
+    # Testando o modelo
+    for (p in 1:nrow(test_data)) {
+        Xp = as.numeric(test_data[p, 1:trainedModel$input.lenght])
+        Yp = as.numeric(test_data[p, (as.numeric(trainedModel$input.lenght)+1):ncol(test_data)])
+
+        results = mlp.forward(trainedModel, Xp)
+        Op = results$fNetOP
+
+        if (Op > 0.5) {
+            Op = 1
+        } else {
+            Op = 0
+        }
+
+        cat("Teste: ", p, "\n")
+        cat("Valor esperado: ", Yp, " - Valor Obtido: ", Op, "\n\n")
+
+        if (Op == Yp) acertos = sum(acertos, 1)
+    }
+
+    print(paste("Resultados da época final: ", epocaFinal))
+    print(paste("Acertos: ", acertos, " de ", nrow(test_data), " (acurácia de", acertos/nrow(test_data)*100, "%)"))
 }
